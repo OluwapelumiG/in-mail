@@ -54,6 +54,6 @@ web/node_modules/
 # Build outputs
 .next/
 web/.next/
-server
+./server
 bin/
 
