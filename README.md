@@ -186,3 +186,16 @@ MIT License
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
+
+
+## Todo Next
+
+Now that our app is working the way we want, let's do some UI refinement.
+
+Install shadcn dashboard, the header style of dashboard and let's introduce multiple users type of mail management. 
+
+This means we'll be able to have different applications, each application with it's own credentials, and we'll be managing emails of each application seperately.
+
+We'll introduce team switcher to move between one application's dashboard and the other, and have a create new button on the team switcher to create another one.
+
+We'll introduce websocket to ensure that we don't need to refresh in order to get new mails
