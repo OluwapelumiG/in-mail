@@ -144,7 +144,7 @@ export const messageApi = {
 
 export const configApi = {
   get: async (): Promise<{
-    smtp_port: number;
+    smtp_ports: number[];
     api_port: number;
     version: string;
     max_attachment_size: number;

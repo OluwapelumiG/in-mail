@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -12,7 +13,7 @@ import (
 type Config struct {
 	// Server
 	APIPort     int
-	SMTPPort    int
+	SMTPPorts   []int
 	Environment string
 
 	// Database
@@ -35,9 +36,13 @@ type Config struct {
 	RootPassword string
 	RootEmail    string
 
-	// SMTP Settings
 	MaxAttachmentSize int64
 	SimulationMode    string // "success", "failure", "random"
+	
+	// TLS Settings
+	TLSCertPath string
+	TLSKeyPath  string
+	AutoTLS     bool
 
 	// Rate Limiting
 	RateLimitEnabled bool
@@ -52,7 +57,7 @@ func Load() error {
 
 	AppConfig = &Config{
 		APIPort:     getEnvInt("API_PORT", 8080),
-		SMTPPort:    getEnvInt("SMTP_PORT", 1025),
+		SMTPPorts:    getEnvIntSlice("SMTP_PORTS", []int{1025, 25, 465, 587, 2525}),
 		Environment: getEnv("ENVIRONMENT", "development"),
 
 		DatabaseType:     getEnv("DATABASE_TYPE", "sqlite"),
@@ -74,6 +79,10 @@ func Load() error {
 
 		MaxAttachmentSize: int64(getEnvInt("MAX_ATTACHMENT_SIZE_MB", 10)) * 1024 * 1024,
 		SimulationMode:    getEnv("SIMULATION_MODE", "success"),
+
+		TLSCertPath: getEnv("TLS_CERT_PATH", "data/certs/cert.pem"),
+		TLSKeyPath:  getEnv("TLS_KEY_PATH", "data/certs/key.pem"),
+		AutoTLS:     getEnvBool("AUTO_TLS", true),
 
 		RateLimitEnabled: getEnvBool("RATE_LIMIT_ENABLED", true),
 		RateLimitRPS:     getEnvInt("RATE_LIMIT_RPS", 100),
@@ -114,5 +123,25 @@ func getEnvBool(key string, defaultValue bool) bool {
 		}
 	}
 	return defaultValue
+}
+
+func getEnvIntSlice(key string, defaultValue []int) []int {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+
+	parts := strings.Split(value, ",")
+	var result []int
+	for _, part := range parts {
+		if i, err := strconv.Atoi(strings.TrimSpace(part)); err == nil {
+			result = append(result, i)
+		}
+	}
+	
+	if len(result) == 0 {
+		return defaultValue
+	}
+	return result
 }
 

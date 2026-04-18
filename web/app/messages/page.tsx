@@ -46,16 +46,9 @@ export default function MessagesPage() {
   };
 
   // Load full message details when selected
+  // Load full message details when selected
   const handleMessageClick = async (message: Message) => {
-    // If message already has full content loaded (check if raw_content or headers exist, as they're only in full details)
-    if (message.raw_content !== undefined || message.headers !== undefined) {
-      setSelectedMessage(message);
-      setShowRaw(false);
-      setShowHeaders(false);
-      return;
-    }
-
-    // Otherwise, load full details
+    // Force reload full details on every click to ensure content is fresh and complete
     try {
       setLoadingMessage(true);
       const fullMessage = await messageApi.get(message.id);
@@ -80,14 +73,15 @@ export default function MessagesPage() {
   // Determine which content to display (HTML preferred, fallback to text)
   const getDisplayContent = () => {
     if (!selectedMessage) return null;
-    if (showRaw) {
-      return { type: 'raw', content: selectedMessage.raw_content || '(No raw content)' };
-    }
-    if (selectedMessage.html_body && selectedMessage.html_body.trim() && selectedMessage.html_body !== '"') {
+    if (selectedMessage.html_body && selectedMessage.html_body.replace(/<[^>]*>/g, '').trim().length > 0) {
       return { type: 'html', content: selectedMessage.html_body };
     }
-    if (selectedMessage.text_body && selectedMessage.text_body.trim() && selectedMessage.text_body !== '"') {
+    if (selectedMessage.text_body && selectedMessage.text_body.trim().length > 0) {
       return { type: 'text', content: selectedMessage.text_body };
+    }
+    // Final fallback: if body is missing but raw content exists, show raw
+    if (selectedMessage.raw_content && selectedMessage.raw_content.trim().length > 0) {
+      return { type: 'raw_fallback', content: selectedMessage.raw_content };
     }
     return { type: 'empty', content: 'No content available' };
   };
@@ -347,16 +341,21 @@ export default function MessagesPage() {
                                     dangerouslySetInnerHTML={{ __html: display.content }}
                                   />
                                 );
-                              } else if (display?.type === 'text') {
+                              } else if (display?.type === 'text' || display?.type === 'raw_fallback') {
                                 return (
                                   <div
-                                    className="text-gray-900 whitespace-pre-wrap"
+                                    className={`${display.type === 'raw_fallback' ? 'font-mono text-xs bg-gray-50 p-4 border rounded' : 'text-gray-900'} whitespace-pre-wrap`}
                                     style={{
-                                      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-                                      fontSize: '14px',
+                                      fontFamily: display.type === 'raw_fallback' ? 'monospace' : '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+                                      fontSize: display.type === 'raw_fallback' ? '12px' : '14px',
                                       lineHeight: '1.6',
                                     }}
                                   >
+                                    {display.type === 'raw_fallback' && (
+                                      <div className="text-[10px] text-gray-500 mb-2 uppercase tracking-wider border-b pb-1 mb-3">
+                                        Auto-extracted Raw Content (Body rendering failed)
+                                      </div>
+                                    )}
                                     {display.content}
                                   </div>
                                 );

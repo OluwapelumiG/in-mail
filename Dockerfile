@@ -47,7 +47,7 @@ RUN groupadd -g 1000 appuser && \
 
 USER appuser
 
-EXPOSE 1025 8080
+EXPOSE 25 465 587 1025 2525 3333 8080
 
 CMD ["./inmail"]
 

@@ -13,7 +13,7 @@ func NewConfigService() *ConfigService {
 }
 
 type AppConfigResponse struct {
-	SMTPPort         int    `json:"smtp_port"`
+	SMTPPorts        []int  `json:"smtp_ports"`
 	APIPort          int    `json:"api_port"`
 	Version          string `json:"version"`
 	MaxAttachmentSize int64 `json:"max_attachment_size"`
@@ -27,7 +27,7 @@ type AppConfigResponse struct {
 func (s *ConfigService) GetConfig() *AppConfigResponse {
 	cfg := config.AppConfig
 	response := &AppConfigResponse{
-		SMTPPort:         cfg.SMTPPort,
+		SMTPPorts:        cfg.SMTPPorts,
 		APIPort:          cfg.APIPort,
 		Version:          "1.0.0",
 		MaxAttachmentSize: cfg.MaxAttachmentSize,

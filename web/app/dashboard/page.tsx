@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { isAuthenticated } from '@/lib/auth';
 import { configApi, userApi, User } from '@/lib/api';
@@ -51,20 +51,27 @@ export default function DashboardPage() {
     );
   }
 
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
-  const smtpPort = config?.smtp_port || 1025;
+  const smtpPorts = config?.smtp_ports || [1025, 25, 465, 587, 2525];
   
+  const portLabels: Record<number, string> = {
+    1025: 'Default',
+    25: 'Legacy (Plain/STARTTLS)',
+    465: 'SMTPS (Implicit TLS)',
+    587: 'Modern (STARTTLS)',
+    2525: 'Alternative (STARTTLS)',
+  };
+
   // URLs for different environments - from environment variables
   const dockerUrls = {
     api: process.env.NEXT_PUBLIC_DOCKER_API_URL || 'http://api.inmail.local:8080',
     smtp: process.env.NEXT_PUBLIC_DOCKER_SMTP_HOST || 'api.inmail.local',
-    web: process.env.NEXT_PUBLIC_DOCKER_WEB_URL || 'http://web.inmail.local:3000'
+    web: process.env.NEXT_PUBLIC_DOCKER_WEB_URL || 'http://web.inmail.local:3333'
   };
   
   const hostUrls = {
     api: process.env.NEXT_PUBLIC_HOST_API_URL || 'http://localhost:8080',
     smtp: process.env.NEXT_PUBLIC_HOST_SMTP_HOST || 'localhost',
-    web: process.env.NEXT_PUBLIC_HOST_WEB_URL || 'http://localhost:3000',
+    web: process.env.NEXT_PUBLIC_HOST_WEB_URL || 'http://localhost:3333',
     proxy: process.env.NEXT_PUBLIC_PROXY_URL || 'http://inmail.local'
   };
 
@@ -120,22 +127,29 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">SMTP Port</label>
-                      <div className="mt-1 flex rounded-md shadow-sm">
-                        <input
-                          type="text"
-                          readOnly
-                          value={smtpPort}
-                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md border border-gray-300 bg-gray-50 text-gray-900 text-sm"
-                        />
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(String(smtpPort));
-                          }}
-                          className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100"
-                        >
-                          Copy
-                        </button>
+                      <label className="block text-sm font-medium text-gray-700 font-bold mb-1">SMTP Ports (by Technology)</label>
+                      <div className="space-y-2">
+                        {smtpPorts.map((port: number) => (
+                          <div key={port} className="flex rounded-md shadow-sm">
+                            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-100 text-gray-500 text-[10px] min-w-[130px] font-medium uppercase">
+                              {portLabels[port] || 'Custom'}
+                            </span>
+                            <input
+                              type="text"
+                              readOnly
+                              value={port}
+                              className="flex-1 min-w-0 block w-full px-3 py-1.5 border border-gray-300 bg-gray-50 text-gray-900 text-sm font-mono"
+                            />
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(String(port));
+                              }}
+                              className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100 text-xs font-semibold transition-colors"
+                            >
+                              Copy
+                            </button>
+                          </div>
+                        ))}
                       </div>
                     </div>
                     <div>
@@ -267,22 +281,29 @@ export default function DashboardPage() {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700">SMTP Port</label>
-                      <div className="mt-1 flex rounded-md shadow-sm">
-                        <input
-                          type="text"
-                          readOnly
-                          value={smtpPort}
-                          className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-l-md border border-gray-300 bg-gray-50 text-gray-900 text-sm"
-                        />
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(String(smtpPort));
-                          }}
-                          className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100"
-                        >
-                          Copy
-                        </button>
+                      <label className="block text-sm font-medium text-gray-700 font-bold mb-1">SMTP Ports (by Technology)</label>
+                      <div className="space-y-2">
+                        {smtpPorts.map((port: number) => (
+                          <div key={port} className="flex rounded-md shadow-sm">
+                            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-100 text-gray-500 text-[10px] min-w-[130px] font-medium uppercase">
+                              {portLabels[port] || 'Custom'}
+                            </span>
+                            <input
+                              type="text"
+                              readOnly
+                              value={port}
+                              className="flex-1 min-w-0 block w-full px-3 py-1.5 border border-gray-300 bg-gray-50 text-gray-900 text-sm font-mono"
+                            />
+                            <button
+                              onClick={() => {
+                                navigator.clipboard.writeText(String(port));
+                              }}
+                              className="inline-flex items-center px-3 rounded-r-md border border-l-0 border-gray-300 bg-gray-50 text-gray-500 hover:bg-gray-100 text-xs font-semibold transition-colors"
+                            >
+                              Copy
+                            </button>
+                          </div>
+                        ))}
                       </div>
                     </div>
                     <div>
