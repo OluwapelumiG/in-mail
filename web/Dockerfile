@@ -1,18 +1,18 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM oven/bun:1-alpine AS builder
 
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json bun.lock ./
 
-# Install all dependencies (including dev dependencies for build)
-RUN npm ci
+# Install all dependencies including dev dependencies
+RUN bun install
 
 # Copy source code
 COPY . .
 
-# Ensure public directory exists (Next.js requires it)
+# Ensure public directory exists
 RUN mkdir -p public
 
 # Build arguments for URLs (defaults provided)
@@ -36,10 +36,10 @@ ENV NEXT_PUBLIC_HOST_WEB_URL=$NEXT_PUBLIC_HOST_WEB_URL
 ENV NEXT_PUBLIC_PROXY_URL=$NEXT_PUBLIC_PROXY_URL
 
 # Build the application
-RUN npm run build
+RUN bun run build
 
 # Production stage
-FROM node:20-alpine AS runner
+FROM oven/bun:1-alpine AS runner
 
 WORKDIR /app
 
@@ -50,17 +50,17 @@ RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 # Copy package files
-COPY package*.json ./
+COPY package.json bun.lock ./
 
 # Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
+RUN bun install --production
 
 # Copy built application from builder
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.js ./
 COPY --from=builder --chown=nextjs:nodejs /app/package.json ./
 
-# Copy public directory (ensured to exist in builder stage)
+# Copy public directory
 COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 
 USER nextjs
@@ -70,5 +70,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["npm", "start"]
-
+CMD ["bun", "start"]

@@ -18,21 +18,23 @@ func NewMessageService() *MessageService {
 }
 
 type MessageFilter struct {
-	UserID  *uuid.UUID
-	To      string
-	Subject string
-	From    string
-	Status  models.DeliveryStatus
-	StartDate *time.Time
-	EndDate   *time.Time
-	Limit   int
-	Offset  int
+	UserID        *uuid.UUID
+	ApplicationID *uuid.UUID
+	To            string
+	Subject       string
+	From          string
+	Status        models.DeliveryStatus
+	StartDate     *time.Time
+	EndDate       *time.Time
+	Limit         int
+	Offset        int
 }
 
-func (s *MessageService) CreateMessage(userID uuid.UUID, from, to, subject, textBody, htmlBody, rawContent, headers string) (*models.Message, error) {
+func (s *MessageService) CreateMessage(userID uuid.UUID, appID uuid.UUID, from, to, subject, textBody, htmlBody, rawContent, headers string) (*models.Message, error) {
 	message := &models.Message{
-		UserID:     userID,
-		From:       from,
+		UserID:        userID,
+		ApplicationID: appID,
+		From:          from,
 		To:         to,
 		Subject:    subject,
 		TextBody:   textBody,
@@ -47,8 +49,23 @@ func (s *MessageService) CreateMessage(userID uuid.UUID, from, to, subject, text
 		return nil, fmt.Errorf("failed to create message: %w", err)
 	}
 
+	// Broadcast via WebSocket
+	// Use GlobalHub if initialized
+	// This will be called from smtp server, so we need to make sure GlobalHub is handled
+	// For now, I'll add a check
+	// import "github.com/inmail/inmail/internal/api"
+	// Wait, I can't import internal/api in internal/services (circular dependency)
+	// I should use a callback or a separate event bus.
+	// Let's use a simple global callback for now or a channel.
+	
+	if OnMessageCreated != nil {
+		OnMessageCreated(message)
+	}
+
 	return message, nil
 }
+
+var OnMessageCreated func(*models.Message)
 
 func (s *MessageService) GetMessageByID(id uuid.UUID) (*models.Message, error) {
 	var message models.Message
@@ -69,6 +86,9 @@ func (s *MessageService) ListMessages(filter MessageFilter) ([]models.Message, i
 
 	if filter.UserID != nil {
 		query = query.Where("user_id = ?", *filter.UserID)
+	}
+	if filter.ApplicationID != nil {
+		query = query.Where("application_id = ?", *filter.ApplicationID)
 	}
 	if filter.To != "" {
 		query = query.Where("to LIKE ?", "%"+filter.To+"%")

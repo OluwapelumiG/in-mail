@@ -13,6 +13,10 @@ export const setToken = (token: string): void => {
 export const removeToken = (): void => {
   if (typeof window === 'undefined') return;
   localStorage.removeItem('token');
+};
+
+export const removeUser = (): void => {
+  if (typeof window === 'undefined') return;
   localStorage.removeItem('user');
 };
 

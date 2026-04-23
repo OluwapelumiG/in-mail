@@ -69,6 +69,7 @@ func Initialize() error {
 func Migrate() error {
 	return DB.AutoMigrate(
 		&models.User{},
+		&models.Application{},
 		&models.Message{},
 		&models.Attachment{},
 	)

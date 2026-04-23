@@ -19,9 +19,11 @@ const (
 
 type Message struct {
 	ID          uuid.UUID     `gorm:"type:text;primary_key" json:"id"`
-	UserID      uuid.UUID     `gorm:"type:uuid;index;not null" json:"user_id"`
-	User        User          `gorm:"foreignKey:UserID" json:"user,omitempty"`
-	From        string        `gorm:"not null" json:"from"`
+	UserID        uuid.UUID     `gorm:"type:text;index;not null" json:"user_id"`
+	User          User          `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	ApplicationID uuid.UUID     `gorm:"type:text;index" json:"application_id"`
+	Application   Application   `gorm:"foreignKey:ApplicationID" json:"application,omitempty"`
+	From          string        `gorm:"not null" json:"from"`
 	To          string        `gorm:"not null;index" json:"to"`
 	Cc          string        `json:"cc"`
 	Bcc         string        `json:"bcc"`

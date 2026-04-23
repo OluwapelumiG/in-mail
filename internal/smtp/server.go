@@ -12,38 +12,42 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/inmail/inmail/internal/config"
 	"github.com/inmail/inmail/internal/models"
 	"github.com/inmail/inmail/internal/services"
 )
 
 type Server struct {
-	ports        []int
-	messageSvc   *services.MessageService
-	userSvc      *services.UserService
-	attachments  map[string][]byte
-	tlsConfig    *tls.Config
+	ports          []int
+	messageSvc     *services.MessageService
+	userSvc        *services.UserService
+	applicationSvc *services.ApplicationService
+	attachments    map[string][]byte
+	tlsConfig      *tls.Config
 }
 
 type Session struct {
-	conn         net.Conn
-	reader       *textproto.Reader
-	writer       *textproto.Writer
-	server       *Server
+	conn          net.Conn
+	reader        *textproto.Reader
+	writer        *textproto.Writer
+	server        *Server
 	authenticated bool
-	user         *models.User
-	from         string
-	to           []string
+	user          *models.User
+	application   *models.Application
+	from          string
+	to            []string
 	data          []byte
 	port          int
 }
 
-func NewServer(messageSvc *services.MessageService, userSvc *services.UserService) *Server {
+func NewServer(messageSvc *services.MessageService, userSvc *services.UserService, applicationSvc *services.ApplicationService) *Server {
 	s := &Server{
-		ports:       config.AppConfig.SMTPPorts,
-		messageSvc:  messageSvc,
-		userSvc:     userSvc,
-		attachments: make(map[string][]byte),
+		ports:          config.AppConfig.SMTPPorts,
+		messageSvc:     messageSvc,
+		userSvc:        userSvc,
+		applicationSvc: applicationSvc,
+		attachments:    make(map[string][]byte),
 	}
 
 	// Setup TLS if configured or AutoTLS is enabled
@@ -256,6 +260,18 @@ func (s *Session) handleAuth(args string) bool {
 		username := parts[1]
 		password := parts[2]
 
+		// Check if it's an application API Key
+		if strings.HasPrefix(username, "in_") {
+			app, err := s.server.applicationSvc.GetApplicationByAPIKey(username)
+			if err == nil && app.APISecret == password {
+				s.authenticated = true
+				s.application = app
+				s.user, _ = s.server.userSvc.GetUserByID(app.UserID)
+				s.writer.PrintfLine("235 Authentication successful (Application)")
+				return true
+			}
+		}
+
 		user, err := s.server.userSvc.Authenticate(username, password)
 		if err != nil {
 			s.writer.PrintfLine("535 Authentication failed")
@@ -292,7 +308,22 @@ func (s *Session) handleAuth(args string) bool {
 			return true
 		}
 
-		user, err := s.server.userSvc.Authenticate(string(username), string(password))
+		usernameStr := string(username)
+		passwordStr := string(password)
+
+		// Check if it's an application API Key
+		if strings.HasPrefix(usernameStr, "in_") {
+			app, err := s.server.applicationSvc.GetApplicationByAPIKey(usernameStr)
+			if err == nil && app.APISecret == passwordStr {
+				s.authenticated = true
+				s.application = app
+				s.user, _ = s.server.userSvc.GetUserByID(app.UserID)
+				s.writer.PrintfLine("235 Authentication successful (Application)")
+				return true
+			}
+		}
+
+		user, err := s.server.userSvc.Authenticate(usernameStr, passwordStr)
 		if err != nil {
 			s.writer.PrintfLine("535 Authentication failed")
 			return true
@@ -405,9 +436,22 @@ func (s *Session) processMessage() bool {
 		}
 	}
 
+	// Determine application ID
+	appID := uuid.Nil
+	if s.application != nil {
+		appID = s.application.ID
+	} else if s.user != nil {
+		// Fallback: Use the user's first application if available
+		apps, err := s.server.applicationSvc.ListApplicationsByUserID(s.user.ID)
+		if err == nil && len(apps) > 0 {
+			appID = apps[0].ID
+		}
+	}
+
 	// Create message
 	message, err := s.server.messageSvc.CreateMessage(
 		s.user.ID,
+		appID,
 		parsed.From,
 		strings.Join(s.to, ", "),
 		parsed.Subject,

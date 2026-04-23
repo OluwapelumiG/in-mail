@@ -15,6 +15,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/inmail/inmail/internal/api"
 	"github.com/inmail/inmail/internal/config"
+	"github.com/inmail/inmail/internal/models"
 	"github.com/inmail/inmail/internal/services"
 	"github.com/inmail/inmail/internal/smtp"
 	"github.com/inmail/inmail/internal/storage"
@@ -39,11 +40,22 @@ func main() {
 	}
 
 	// Initialize services
+	applicationSvc := services.NewApplicationService(userSvc)
 	messageSvc := services.NewMessageService()
 	configSvc := services.NewConfigService()
 
+	// Initialize WebSocket Hub
+	api.InitHub()
+
+	// Connect Service to WebSocket Hub via callback
+	services.OnMessageCreated = func(message *models.Message) {
+		if api.GlobalHub != nil {
+			api.GlobalHub.BroadcastNewMessage(message)
+		}
+	}
+
 	// Start SMTP server
-	smtpServer := smtp.NewServer(messageSvc, userSvc)
+	smtpServer := smtp.NewServer(messageSvc, userSvc, applicationSvc)
 	go func() {
 		if err := smtpServer.Start(); err != nil {
 			log.Fatalf("Failed to start SMTP server: %v", err)
@@ -70,7 +82,7 @@ func main() {
 	}))
 
 	// Setup routes
-	api.SetupRoutes(app, userSvc, messageSvc, configSvc)
+	api.SetupRoutes(app, userSvc, messageSvc, configSvc, applicationSvc)
 
 	// Start API server
 	apiAddr := fmt.Sprintf(":%d", config.AppConfig.APIPort)

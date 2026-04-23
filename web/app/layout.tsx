@@ -1,9 +1,10 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { Providers } from '@/components/Providers'
 
 export const metadata: Metadata = {
-  title: 'In-Mail - SMTP Trap Server',
-  description: 'Self-hosted SMTP trap server dashboard',
+  title: 'InMail - Forensic SMTP Engine',
+  description: 'Self-hosted premium SMTP trap server dashboard',
 }
 
 export default function RootLayout({
@@ -12,9 +13,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-background font-sans antialiased overflow-x-hidden">
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   )
 }
-

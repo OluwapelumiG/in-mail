@@ -26,9 +26,13 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
+        const isLoginPage = window.location.pathname === '/login';
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        
+        if (!isLoginPage) {
+          window.location.href = '/login';
+        }
       }
     }
     return Promise.reject(error);
@@ -42,6 +46,16 @@ export interface User {
   role: 'root' | 'user';
   mailbox_name: string;
   active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Application {
+  id: string;
+  user_id: string;
+  name: string;
+  api_key: string;
+  api_secret: string;
   created_at: string;
   updated_at: string;
 }
@@ -61,6 +75,7 @@ export interface Message {
   status: 'success' | 'failed' | 'temporary' | 'permanent';
   failure_reason?: string;
   received_at: string;
+  application_id?: string;
   created_at: string;
   updated_at: string;
   attachments?: Attachment[];
@@ -109,6 +124,9 @@ export const userApi = {
     const response = await api.get<ApiResponse<User[]>>('/admin/users');
     return response.data.data;
   },
+  updatePassword: async (userId: string, password: string): Promise<void> => {
+    await api.patch(`/admin/users/${userId}`, { password });
+  },
 };
 
 export const messageApi = {
@@ -119,6 +137,7 @@ export const messageApi = {
     from?: string;
     subject?: string;
     status?: string;
+    application_id?: string;
   }): Promise<{ messages: Message[]; total: number; limit: number; offset: number }> => {
     const response = await api.get<ApiResponse<{ messages: Message[]; total: number; limit: number; offset: number }>>(
       '/messages',
@@ -139,6 +158,43 @@ export const messageApi = {
   getAttachmentUrl: (messageId: string, attachmentId: string): string => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
     return `${apiUrl}/api/messages/${messageId}/attachments/${attachmentId}`;
+  },
+  downloadAttachment: async (messageId: string, attachmentId: string, token: string, filename: string): Promise<void> => {
+    const url = messageApi.getAttachmentUrl(messageId, attachmentId);
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = downloadUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(downloadUrl);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Download failed:', err);
+      alert('Failed to download attachment');
+    }
+  },
+};
+
+export const applicationApi = {
+  list: async (): Promise<Application[]> => {
+    const response = await api.get<Application[]>('/applications');
+    return response.data;
+  },
+  create: async (name: string): Promise<Application> => {
+    const response = await api.post<Application>('/applications', { name });
+    return response.data;
+  },
+  delete: async (id: string): Promise<void> => {
+    await api.delete(`/applications/${id}`);
   },
 };
 

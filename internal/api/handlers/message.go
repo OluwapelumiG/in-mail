@@ -39,6 +39,12 @@ func (h *MessageHandler) ListMessages(c *fiber.Ctx) error {
 	}
 
 	// Parse query parameters
+	if appIDStr := c.Query("application_id"); appIDStr != "" {
+		if appID, err := uuid.Parse(appIDStr); err == nil {
+			filter.ApplicationID = &appID
+		}
+	}
+
 	if to := c.Query("to"); to != "" {
 		filter.To = to
 	}
