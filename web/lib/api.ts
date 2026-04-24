@@ -129,6 +129,13 @@ export const userApi = {
   updatePassword: async (userId: string, password: string): Promise<void> => {
     await api.patch(`/admin/users/${userId}`, { password });
   },
+  deleteUser: async (userId: string): Promise<void> => {
+    await api.delete(`/admin/users/${userId}`);
+  },
+  listMailboxes: async (): Promise<User[]> => {
+    const response = await api.get<ApiResponse<User[]>>('/mailboxes');
+    return response.data.data;
+  },
 };
 
 export const messageApi = {
