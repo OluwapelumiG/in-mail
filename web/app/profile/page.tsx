@@ -24,11 +24,11 @@ export default function ProfilePage() {
   const passwordMutation = useMutation({
     mutationFn: (password: string) => userApi.updatePassword(user?.id || "", password),
     onSuccess: () => {
-      setSuccess("Terminal access key updated successfully.")
+      setSuccess("Password updated successfully.")
       setTimeout(() => setSuccess(""), 5000)
     },
     onError: (err: any) => {
-      setError(err.response?.data?.message || "Failed to update access key.")
+      setError(err.response?.data?.message || "Failed to update password.")
     }
   })
 
@@ -54,7 +54,7 @@ export default function ProfilePage() {
   })
 
   return (
-    <DashboardLayout title="Root Profile" subtitle="Manage security credentials">
+    <DashboardLayout title="Administrator Profile" subtitle="Manage your account security">
       <div className="grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-1 space-y-8">
            <Card className="premium-card overflow-hidden">
@@ -64,19 +64,19 @@ export default function ProfilePage() {
                     {user?.username?.charAt(0).toUpperCase()}
                  </div>
                  <h3 className="mt-4 text-2xl font-black tracking-tight">{user?.username}</h3>
-                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em] mt-1">Forensic Root Administrator</p>
+                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-[0.2em] mt-1">System Administrator</p>
                  
                  <div className="mt-8 grid grid-cols-2 gap-4">
                     <div className="p-4 rounded-2xl bg-muted/30 text-left">
-                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Status</p>
+                       <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Status</p>
                        <div className="flex items-center gap-2">
                           <div className="h-2 w-2 rounded-full bg-green-500" />
-                          <span className="text-xs font-bold">Active</span>
+                          <span className="text-xs font-semibold">Active</span>
                        </div>
                     </div>
                     <div className="p-4 rounded-2xl bg-muted/30 text-left">
-                       <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">Role</p>
-                       <span className="text-xs font-bold uppercase">{user?.role}</span>
+                       <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest mb-1">Role</p>
+                       <span className="text-xs font-semibold uppercase">{user?.role}</span>
                     </div>
                  </div>
               </CardContent>
@@ -107,21 +107,21 @@ export default function ProfilePage() {
                     <div className="p-2 bg-primary/10 rounded-xl text-primary">
                        <Key className="h-5 w-5" />
                     </div>
-                    <CardTitle className="text-xl font-bold tracking-tight">Access Key Rotation</CardTitle>
+                    <CardTitle className="text-xl font-semibold tracking-tight">Change Password</CardTitle>
                  </div>
-                 <CardDescription className="text-xs font-bold uppercase tracking-widest">Update your terminal password</CardDescription>
+                 <CardDescription className="text-xs font-semibold uppercase tracking-widest">Update your account password</CardDescription>
               </CardHeader>
               <CardContent className="p-8">
                  {success && (
                     <Alert className="mb-8 border-green-500/20 bg-green-500/10 text-green-600 rounded-2xl animate-in fade-in slide-in-from-top-4">
                        <CheckCircledIcon className="h-4 w-4" />
-                       <AlertDescription className="text-xs font-bold uppercase tracking-widest">{success}</AlertDescription>
+                       <AlertDescription className="text-xs font-semibold uppercase tracking-widest">{success}</AlertDescription>
                     </Alert>
                  )}
                  {error && (
                     <Alert variant="destructive" className="mb-8 rounded-2xl bg-destructive/10 border-destructive/20 text-destructive">
                        <ExclamationTriangleIcon className="h-4 w-4" />
-                       <AlertDescription className="text-xs font-bold uppercase tracking-widest">{error}</AlertDescription>
+                       <AlertDescription className="text-xs font-semibold uppercase tracking-widest">{error}</AlertDescription>
                     </Alert>
                  )}
 
@@ -143,7 +143,7 @@ export default function ProfilePage() {
                        }}
                        children={(field) => (
                           <div className="space-y-3">
-                             <Label htmlFor={field.name} className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">New Terminal Key</Label>
+                             <Label htmlFor={field.name} className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">New Password</Label>
                              <div className="relative group">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                 <Input
@@ -157,7 +157,7 @@ export default function ProfilePage() {
                                 />
                              </div>
                              {field.state.meta.errors ? (
-                                <p className="text-[10px] text-destructive font-bold uppercase tracking-widest ml-1">{field.state.meta.errors.join(", ")}</p>
+                                <p className="text-[10px] text-destructive font-semibold uppercase tracking-widest ml-1">{field.state.meta.errors.join(", ")}</p>
                              ) : null}
                           </div>
                        )}
@@ -173,7 +173,7 @@ export default function ProfilePage() {
                         }}
                         children={(field) => (
                           <div className="space-y-3">
-                             <Label htmlFor={field.name} className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Confirm Security Key</Label>
+                             <Label htmlFor={field.name} className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Confirm Password</Label>
                              <div className="relative group">
                                 <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                                 <Input
@@ -187,7 +187,7 @@ export default function ProfilePage() {
                                 />
                              </div>
                              {field.state.meta.errors ? (
-                                <p className="text-[10px] text-destructive font-bold uppercase tracking-widest ml-1">{field.state.meta.errors.join(", ")}</p>
+                                <p className="text-[10px] text-destructive font-semibold uppercase tracking-widest ml-1">{field.state.meta.errors.join(", ")}</p>
                              ) : null}
                           </div>
                        )}
@@ -201,10 +201,10 @@ export default function ProfilePage() {
                        {passwordMutation.isPending ? (
                           <div className="flex items-center gap-2">
                              <Loader2 className="h-4 w-4 animate-spin" />
-                             <span>Rotating Keys...</span>
+                             <span>Updating Password...</span>
                           </div>
                        ) : (
-                          "Commit Key Rotation"
+                          "Update Password"
                        )}
                     </Button>
                  </form>

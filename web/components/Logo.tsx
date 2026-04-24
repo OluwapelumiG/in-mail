@@ -2,7 +2,7 @@ import Image from "next/image"
 
 export function Logo({ className }: { className?: string }) {
   return (
-    <div className={`flex items-center gap-2 font-bold ${className}`}>
+    <div className={`flex items-center gap-2 font-semibold ${className}`}>
       <div className="relative flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-800">
         <Image 
           src="/logo.png" 

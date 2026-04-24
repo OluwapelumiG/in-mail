@@ -30,37 +30,37 @@ export default function SettingsPage() {
 
   const settingGroups = [
     {
-      title: "Core Infrastructure",
-      description: "Manage system-level SMTP behavior and routing",
+      title: "Email Settings",
+      description: "Manage system-level email behavior and routing",
       icon: <Database className="h-5 w-5" />,
       items: [
-        { id: "persistence", label: "Packet Persistence", description: "Save full MIME payloads to disk", checked: true },
-        { id: "encryption", label: "End-to-End Encryption", description: "Encrypt captures at rest using AES-256", checked: true },
-        { id: "compression", label: "Delta Compression", description: "Reduce storage for repetitive captures", checked: false },
+        { id: "persistence", label: "Save Message Content", description: "Save full email content to disk", checked: true },
+        { id: "encryption", label: "Secure Storage", description: "Encrypt emails at rest using AES-256", checked: true },
+        { id: "compression", label: "Storage Optimization", description: "Reduce storage space for repetitive emails", checked: false },
       ]
     },
     {
       title: "Real-time Monitoring",
-      description: "Configure stream velocity and alert triggers",
+      description: "Configure email activity and alert triggers",
       icon: <Zap className="h-5 w-5" />,
       items: [
-        { id: "ws", label: "WebSocket Stream", description: "Enable low-latency live updates", checked: true },
-        { id: "alerts", label: "Anomaly Detection", description: "Notify on unusual capture volume", checked: false },
+        { id: "ws", label: "Live Updates", description: "Enable low-latency live updates", checked: true },
+        { id: "alerts", label: "Anomaly Detection", description: "Notify on unusual email activity", checked: false },
       ]
     },
     {
-      title: "Forensic Analysis",
-      description: "Advanced inspection and heuristic settings",
+      title: "Email Security",
+      description: "Advanced scanning and filtering settings",
       icon: <Fingerprint className="h-5 w-5" />,
       items: [
-        { id: "mime", label: "Deep MIME Parsing", description: "Extract and verify all nested segments", checked: true },
-        { id: "heuristics", label: "Heuristic Scoring", description: "Calculate spam and forensic risk factors", checked: true },
+        { id: "mime", label: "Deep Message Scan", description: "Scan all parts of the email including attachments", checked: true },
+        { id: "heuristics", label: "Spam Protection", description: "Calculate spam and security risks", checked: true },
       ]
     }
   ]
 
   return (
-    <DashboardLayout title="System Configuration" subtitle="Terminal & Node settings">
+    <DashboardLayout title="System Configuration" subtitle="Mail server & mailbox settings">
       <div className="grid gap-10">
         <div className="grid gap-8 lg:grid-cols-3">
            <Card className="premium-card lg:col-span-1 bg-primary/5 border-none shadow-none">
@@ -68,27 +68,27 @@ export default function SettingsPage() {
                  <div className="p-3 bg-primary/10 rounded-2xl text-primary w-fit mb-4">
                     <Shield className="h-6 w-6" />
                  </div>
-                 <CardTitle className="text-xl font-black tracking-tight">System Integrity</CardTitle>
-                 <CardDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Version 2.4.0-Stable</CardDescription>
+                 <CardTitle className="text-xl font-black tracking-tight">Server Health</CardTitle>
+                 <CardDescription className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Version 2.4.0-Stable</CardDescription>
               </CardHeader>
               <CardContent className="p-8 pt-0 space-y-6">
                  <div className="space-y-4">
-                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                        <span>Database Engine</span>
                        <span className="text-primary font-mono">PostgreSQL 15</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                       <span>Stream Host</span>
+                    <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                       <span>Server Engine</span>
                        <span className="text-primary font-mono">Go/Fiber 2.0</span>
                     </div>
-                    <div className="flex items-center justify-between text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                    <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                        <span>Memory Usage</span>
                        <span className="text-primary font-mono">142 MB / 2 GB</span>
                     </div>
                  </div>
                  <Separator className="bg-primary/10" />
-                 <Button variant="outline" className="w-full rounded-xl border-primary/20 bg-transparent text-primary font-bold uppercase text-[10px] tracking-widest h-12 hover:bg-primary/5">
-                    Run System Diagnostic
+                 <Button variant="outline" className="w-full rounded-xl border-primary/20 bg-transparent text-primary font-semibold uppercase text-[10px] tracking-widest h-12 hover:bg-primary/5">
+                    Run Server Check
                  </Button>
               </CardContent>
            </Card>
@@ -102,8 +102,8 @@ export default function SettingsPage() {
                           {group.icon}
                        </div>
                        <div>
-                          <CardTitle className="text-lg font-bold tracking-tight">{group.title}</CardTitle>
-                          <CardDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{group.description}</CardDescription>
+                          <CardTitle className="text-lg font-semibold tracking-tight">{group.title}</CardTitle>
+                          <CardDescription className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">{group.description}</CardDescription>
                        </div>
                     </div>
                   </CardHeader>
@@ -111,8 +111,8 @@ export default function SettingsPage() {
                     {group.items.map((item) => (
                       <div key={item.id} className="flex items-center justify-between py-6 first:pt-0 last:pb-0">
                          <div className="space-y-1">
-                            <Label htmlFor={item.id} className="text-sm font-bold tracking-tight cursor-pointer">{item.label}</Label>
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">{item.description}</p>
+                            <Label htmlFor={item.id} className="text-sm font-semibold tracking-tight cursor-pointer">{item.label}</Label>
+                            <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">{item.description}</p>
                          </div>
                          <Switch id={item.id} defaultChecked={item.checked} className="data-[state=checked]:bg-primary" />
                       </div>
@@ -122,8 +122,8 @@ export default function SettingsPage() {
               ))}
 
               <div className="flex items-center justify-end gap-4 p-8 bg-card/50 rounded-[2rem] border border-dashed border-border/50">
-                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Configuration changes are atomic and permanent</p>
-                 <Button className="rounded-xl px-10 h-12 font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-primary/20">Commit Changes</Button>
+                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Configuration changes are atomic and permanent</p>
+                 <Button className="rounded-xl px-10 h-12 font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-primary/20">Save Changes</Button>
               </div>
            </div>
         </div>

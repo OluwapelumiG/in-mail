@@ -3,8 +3,8 @@ import './globals.css'
 import { Providers } from '@/components/Providers'
 
 export const metadata: Metadata = {
-  title: 'InMail - Forensic SMTP Engine',
-  description: 'Self-hosted premium SMTP trap server dashboard',
+  title: 'InMail - Personal Email Server',
+  description: 'Premium self-hosted email server dashboard',
 }
 
 export default function RootLayout({

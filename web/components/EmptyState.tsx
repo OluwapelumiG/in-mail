@@ -22,7 +22,7 @@ export function EmptyState({
         {icon || <Inbox className="h-10 w-10" />}
       </div>
       <h3 className="text-3xl font-black tracking-tight text-foreground font-serif italic">{title}</h3>
-      <p className="mx-auto mt-4 max-w-sm text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-relaxed">
+      <p className="mx-auto mt-4 max-w-sm text-[10px] font-semibold text-muted-foreground uppercase tracking-widest leading-relaxed">
         {description}
       </p>
       {actionLabel && onAction && (

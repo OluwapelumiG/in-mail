@@ -49,30 +49,30 @@ export function CreateInboxDialog({ open, onOpenChange }: CreateInboxDialogProps
           <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary shadow-inner mb-2">
              <Zap className="h-8 w-8" />
           </div>
-          <DialogTitle className="text-3xl font-black tracking-tight leading-tight">Initialize Node</DialogTitle>
-          <DialogDescription className="text-xs font-bold uppercase tracking-widest text-muted-foreground leading-relaxed">
-            Register a new forensic SMTP entry point for your project infrastructure.
+          <DialogTitle className="text-3xl font-black tracking-tight leading-tight">Create New Mailbox</DialogTitle>
+          <DialogDescription className="text-xs font-semibold uppercase tracking-widest text-muted-foreground leading-relaxed">
+            Set up a new mailbox to receive and manage emails.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-8 py-6">
           <div className="space-y-3">
             <Label htmlFor="inbox-name" className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">
-              Node Identifier / Name
+              Mailbox Name
             </Label>
             <Input
               id="inbox-name"
-              placeholder="e.g. STAGING-CLUSTER-01"
+              placeholder="e.g. Personal Inbox"
               value={name}
               onChange={(e) => setName(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
-              className="h-14 rounded-2xl bg-muted/40 border-none px-6 text-sm font-bold focus-visible:ring-2 focus-visible:ring-primary/20 transition-all placeholder:text-muted-foreground/30"
+              className="h-14 rounded-2xl bg-muted/40 border-none px-6 text-sm font-semibold focus-visible:ring-2 focus-visible:ring-primary/20 transition-all placeholder:text-muted-foreground/30"
               autoFocus
             />
           </div>
         </div>
         <DialogFooter className="flex flex-col sm:flex-row gap-4">
-          <Button variant="ghost" onClick={() => onOpenChange(false)} className="rounded-2xl h-14 font-bold uppercase text-[10px] tracking-widest flex-1">
-            Abort
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="rounded-2xl h-14 font-semibold uppercase text-[10px] tracking-widest flex-1">
+            Cancel
           </Button>
           <Button 
             onClick={handleCreate} 
@@ -82,9 +82,9 @@ export function CreateInboxDialog({ open, onOpenChange }: CreateInboxDialogProps
             {createMutation.isPending ? (
                <div className="flex items-center gap-2">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Booting...</span>
+                  <span>Creating...</span>
                </div>
-            ) : "Confirm Node"}
+            ) : "Create Mailbox"}
           </Button>
         </DialogFooter>
       </DialogContent>

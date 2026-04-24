@@ -62,8 +62,8 @@ export function Sidebar() {
                   <Inbox className="h-4 w-4 text-primary" />
                 </div>
                 <div className="text-left overflow-hidden">
-                  <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest leading-none mb-1">Active Inbox</p>
-                  <p className="text-sm font-bold truncate text-foreground">{currentInbox?.name || "Select Inbox"}</p>
+                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest leading-none mb-1">Active Inbox</p>
+                  <p className="text-sm font-semibold truncate text-foreground">{currentInbox?.name || "Select Inbox"}</p>
                 </div>
               </div>
               <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
@@ -85,15 +85,15 @@ export function Sidebar() {
                     )}>
                       <Inbox className="h-4 w-4" />
                     </div>
-                    <span className="font-bold text-sm">{inbox.name}</span>
+                    <span className="font-semibold text-sm">{inbox.name}</span>
                   </div>
                 </DropdownMenuItem>
               ))}
             </ScrollArea>
             <DropdownMenuSeparator className="my-2" />
-            <DropdownMenuItem onSelect={() => setShowCreateDialog(true)} className="rounded-xl p-3 cursor-pointer text-primary font-bold">
+            <DropdownMenuItem onSelect={() => setShowCreateDialog(true)} className="rounded-xl p-3 cursor-pointer text-primary font-semibold">
               <Plus className="h-4 w-4 mr-2" />
-              Initialize New Inbox
+              Create New Mailbox
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -106,7 +106,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-4 px-4 py-4 rounded-2xl transition-all font-bold text-sm group",
+                "flex items-center gap-4 px-4 py-4 rounded-2xl transition-all font-semibold text-sm group",
                 pathname === item.href 
                   ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" 
                   : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -127,8 +127,8 @@ export function Sidebar() {
                  {user?.username?.charAt(0).toUpperCase()}
               </div>
               <div className="overflow-hidden">
-                 <p className="text-sm font-bold truncate">{user?.username}</p>
-                 <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Root Session</p>
+                 <p className="text-sm font-semibold truncate">{user?.username}</p>
+                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Root Session</p>
               </div>
            </div>
            <Button variant="ghost" size="icon" className="rounded-xl text-muted-foreground hover:text-destructive transition-colors" onClick={logout}>
