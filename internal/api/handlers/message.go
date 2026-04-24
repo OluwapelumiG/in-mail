@@ -54,6 +54,9 @@ func (h *MessageHandler) ListMessages(c *fiber.Ctx) error {
 	if subject := c.Query("subject"); subject != "" {
 		filter.Subject = subject
 	}
+	if q := c.Query("q"); q != "" {
+		filter.Query = q
+	}
 	if status := c.Query("status"); status != "" {
 		filter.Status = models.DeliveryStatus(status)
 	}
@@ -124,6 +127,9 @@ func (h *MessageHandler) GetMessage(c *fiber.Ctx) error {
 			"message": "Access denied",
 		})
 	}
+	
+	// Mark as read
+	_ = h.messageSvc.MarkAsRead(id)
 
 	return c.JSON(fiber.Map{
 		"status": "success",

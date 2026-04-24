@@ -74,6 +74,7 @@ export interface Message {
   raw_content?: string;
   headers?: string;
   status: 'success' | 'failed' | 'temporary' | 'permanent';
+  is_read: boolean;
   failure_reason?: string;
   received_at: string;
   application_id?: string;
@@ -139,6 +140,7 @@ export const messageApi = {
     subject?: string;
     status?: string;
     application_id?: string;
+    q?: string;
   }): Promise<{ messages: Message[]; total: number; limit: number; offset: number }> => {
     const response = await api.get<ApiResponse<{ messages: Message[]; total: number; limit: number; offset: number }>>(
       '/messages',

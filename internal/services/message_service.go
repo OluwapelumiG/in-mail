@@ -23,6 +23,7 @@ type MessageFilter struct {
 	To            string
 	Subject       string
 	From          string
+	Query         string
 	Status        models.DeliveryStatus
 	StartDate     *time.Time
 	EndDate       *time.Time
@@ -99,6 +100,10 @@ func (s *MessageService) ListMessages(filter MessageFilter) ([]models.Message, i
 	if filter.Subject != "" {
 		query = query.Where("subject LIKE ?", "%"+filter.Subject+"%")
 	}
+	if filter.Query != "" {
+		q := "%" + filter.Query + "%"
+		query = query.Where("subject LIKE ? OR \"from\" LIKE ? OR \"to\" LIKE ? OR text_body LIKE ?", q, q, q, q)
+	}
 	if filter.Status != "" {
 		query = query.Where("status = ?", filter.Status)
 	}
@@ -124,7 +129,7 @@ func (s *MessageService) ListMessages(filter MessageFilter) ([]models.Message, i
 
 	// Select only needed fields for list view (exclude large content fields)
 	// Load attachments count but not the data
-	query = query.Select("id", "user_id", "from", "to", "cc", "bcc", "subject", "status", "failure_reason", "received_at", "created_at", "updated_at")
+	query = query.Select("id", "user_id", "from", "to", "cc", "bcc", "subject", "status", "is_read", "failure_reason", "received_at", "created_at", "updated_at")
 	
 	// Execute query
 	if err := query.Preload("User").Order("received_at DESC").Find(&messages).Error; err != nil {
@@ -155,6 +160,10 @@ func (s *MessageService) DeleteMessage(id uuid.UUID) error {
 
 func (s *MessageService) BulkDeleteMessages(ids []uuid.UUID) error {
 	return storage.DB.Where("id IN ?", ids).Delete(&models.Message{}).Error
+}
+
+func (s *MessageService) MarkAsRead(id uuid.UUID) error {
+	return storage.DB.Model(&models.Message{}).Where("id = ?", id).Update("is_read", true).Error
 }
 
 func (s *MessageService) UpdateMessageStatus(id uuid.UUID, status models.DeliveryStatus, failureReason string) error {

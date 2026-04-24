@@ -62,8 +62,8 @@ export default function SettingsPage() {
   return (
     <DashboardLayout title="System Configuration" subtitle="Mail server & mailbox settings">
       <div className="grid gap-10">
-        <div className="grid gap-8 lg:grid-cols-3">
-           <Card className="premium-card lg:col-span-1 bg-primary/5 border-none shadow-none">
+        <div className="grid gap-8">
+           {/* <Card className="premium-card lg:col-span-1 bg-primary/5 border-none shadow-none">
               <CardHeader className="p-8 pb-4">
                  <div className="p-3 bg-primary/10 rounded-2xl text-primary w-fit mb-4">
                     <Shield className="h-6 w-6" />
@@ -91,9 +91,9 @@ export default function SettingsPage() {
                     Run Server Check
                  </Button>
               </CardContent>
-           </Card>
+           </Card> */}
 
-           <div className="lg:col-span-2 space-y-8">
+           {/* <div className="lg:col-span-2 space-y-8"> */}
               {settingGroups.map((group) => (
                 <Card key={group.title} className="premium-card">
                   <CardHeader className="p-8 border-b border-border/50">
@@ -122,10 +122,9 @@ export default function SettingsPage() {
               ))}
 
               <div className="flex items-center justify-end gap-4 p-8 bg-card/50 rounded-[2rem] border border-dashed border-border/50">
-                 <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-widest">Configuration changes are atomic and permanent</p>
                  <Button className="rounded-xl px-10 h-12 font-black uppercase tracking-[0.2em] text-[10px] shadow-xl shadow-primary/20">Save Changes</Button>
               </div>
-           </div>
+           {/* </div> */}
         </div>
       </div>
     </DashboardLayout>

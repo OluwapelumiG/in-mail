@@ -33,6 +33,7 @@ type Message struct {
 	RawContent  string        `gorm:"type:text" json:"raw_content"`
 	Headers     string        `gorm:"type:text" json:"headers"`
 	Status      DeliveryStatus `gorm:"type:varchar(20);default:'success'" json:"status"`
+	IsRead      bool           `gorm:"default:false" json:"is_read"`
 	FailureReason string      `gorm:"type:text" json:"failure_reason,omitempty"`
 	ReceivedAt  time.Time     `gorm:"index" json:"received_at"`
 	CreatedAt   time.Time     `json:"created_at"`
